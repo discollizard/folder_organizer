@@ -1,19 +1,18 @@
 defmodule FolderOrganizer do
   @moduledoc """
-  Documentation for `FolderOrganizer`.
+    Documentation for `FolderOrganizer`.
     """
 
-  @is_debug true
+  #@is_debug true
 
  @doc """
   Entry point for the program. Detects the scan type
   then calls the appropriate function
   """
   def scan(args) do
-    if length(args) == 0 do
+    if !is_list(args) || length(args) == 0 do
       help()
     else
-
       try do
         # IO.puts(is_list(args))
         [scanMode, scanArgs, folderToScan] = args
@@ -22,10 +21,10 @@ defmodule FolderOrganizer do
           "--regex" -> scan_by_regex(scanArgs, folderToScan)
           _  -> error(:invalid_mode)
         end
-      catch
-        :error -> error(:generic)
       rescue
         MatchError -> error(:few_arguments)
+      catch
+        :error -> error(:generic)
       end
     end
   end
@@ -41,17 +40,17 @@ defmodule FolderOrganizer do
   #error treatment
   def error(:generic) do
     IO.puts("Incorrect usage. Correct usage is: forg --mode scan_arg folder/to/scan")
-    :error
+    :error_generic
   end
 
   def error(:few_arguments) do
     IO.puts("There were too few arguments. Correct usage is: forg --mode scan_arg folder/to/scan")
-    :error
+    :error_few_arguments
   end
 
   def error(:invalid_mode) do
     IO.puts("The selected mode is invalid. The existing modes are: --extension, --regex")
-    :error
+    :error_invalid_mode
   end
 
  @doc """
@@ -59,14 +58,14 @@ defmodule FolderOrganizer do
 
   ## Examples
 
-      iex> FolderOrganizer.hello()
-      :world
+      iex> FolderOrganizer.help()
+      :help
 
   """
   def help do
     IO.puts("disco's Folder Organizer: scans your files and puts them into the right folder \n
       basic usage: forg --mode scan_arg folder/to/scan
     ")
-    :ok
+    :help
   end
 end
